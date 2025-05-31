@@ -1,8 +1,8 @@
-#include "Menu.h"
-#include "User.h"
-#include "Controller.h"
-#include "TyreCenterHeader.h"
-#include "TyreCenterFunctions.h"
+#include "../headers/Menu.h"
+#include "../headers/User.h"
+#include "../headers/Controller.h"
+#include "../headers/TyreCenterHeader.h"
+#include "../headers/TyreCenterFunctions.h"
 
 #include <ctime>
 #include <iostream>

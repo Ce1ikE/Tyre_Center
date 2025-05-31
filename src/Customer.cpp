@@ -1,5 +1,5 @@
-#include "Customer.h"
-#include "TyreCenterHeader.h"
+#include "../headers/Customer.h"
+#include "../headers/TyreCenterHeader.h"
 
 Customer::Customer() 
 {
