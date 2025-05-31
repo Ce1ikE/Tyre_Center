@@ -1,0 +1,272 @@
+#pragma once
+#ifndef MENU_H
+#define MENU_H
+
+#include <array>
+#include <vector>
+#include <unordered_map>
+#include <iostream>
+#include <iomanip>
+#include "TyreCenterHeader.h"
+#include "User.h"
+
+// (m) == Manager specific
+enum class LoginMenuRequest
+{
+	// Login Menu Options
+	  LOGIN_MAIN_MENU = 0
+	, LOGIN = 1
+	, QUIT_PROGRAM
+};
+
+enum class MainMenuRequest
+{
+	// Main Menu Options
+	// Main Menu [1-9]
+	  MAIN_MENU = 0
+	, GO_TO_CUSTOMER_MENU
+	, GO_TO_PRODUCT_MENU
+	, GO_TO_INVOICE_MENU
+	, GO_TO_DISCOUNT_MENU
+	, GO_TO_ACCOUNT_MENU
+	, LOAD_DATA
+	, LOGOUT
+};
+
+enum class CustomerMenuRequest 
+{
+	// Customer Menu Options + SubMenu Options
+	  CUSTOMER_MAIN_MENU = 0
+	// Customer Menu [1-9]
+	, BACK_TO_MAIN_MENU = 1 
+	, DISPLAY_CUSTOMER_LIST
+	, SAVE_CUSTOMERS
+	, ADD_CUSTOMER
+	, DELETE_CUSTOMER // (m)
+	, UPDATE_CUSTOMER
+	// SubMenu (1) [10-19]
+	, SHOW_ALL_CUSTOMERS = 10 
+	, FILTER_ON_CUSTOMERS
+	, ORDER_BY_CUSTOMERS
+	, EXIT_CUSTOMER_SUBMENU_1
+	// SubMenu (2) [20-29]
+	, FILTER_ON_CUSTOMERS_FIRSTNAME = 20 
+	, FILTER_ON_CUSTOMERS_LASTNAME
+	, FILTER_ON_CUSTOMERS_TYPE
+	, FILTER_ON_CUSTOMERS_ADDRESS
+	, EXIT_CUSTOMER_SUBMENU_2
+	// SubMenu (3) [30-39]
+	, ORDER_BY_CUSTOMERS_FIRSTNAME = 30 
+	, ORDER_BY_CUSTOMERS_LASTNAME
+	, ORDER_BY_CUSTOMERS_TYPE
+	, ORDER_BY_CUSTOMERS_ADDRESS
+	, EXIT_CUSTOMER_SUBMENU_3
+	// SubMenu (4) [40-49]
+	, FILTER_ON_CUSTOMERS_TYPE_PRIV = 40
+	, FILTER_ON_CUSTOMERS_TYPE_CORP
+	, EXIT_CUSTOMER_SUBMENU_4
+	// SubMenu (5) [50-59]
+	, ORDER_BY_CUSTOMERS_TYPE_PRIV = 50
+	, ORDER_BY_CUSTOMERS_TYPE_CORP
+	, EXIT_CUSTOMER_SUBMENU_5
+	// SubMenu (6) [60-69]
+	, FILTER_ON_CUSTOMERS_ADDRESS_COUNTRY = 60
+	, FILTER_ON_CUSTOMERS_ADDRESS_POSTALCODE
+	, FILTER_ON_CUSTOMERS_ADDRESS_STREETNAME
+	, FILTER_ON_CUSTOMERS_ADDRESS_HOUSENUMBER
+	, FILTER_ON_CUSTOMERS_ADDRESS_PHONENUMBER
+	, EXIT_CUSTOMER_SUBMENU_6
+	// SubMenu (7) [70-79]
+	, ORDER_BY_CUSTOMERS_ADDRESS_COUNTRY = 70
+	, ORDER_BY_CUSTOMERS_ADDRESS_POSTALCODE
+	, ORDER_BY_CUSTOMERS_ADDRESS_STREETNAME
+	, ORDER_BY_CUSTOMERS_ADDRESS_HOUSENUMBER
+	, ORDER_BY_CUSTOMERS_ADDRESS_PHONENUMBER
+	, EXIT_CUSTOMER_SUBMENU_7
+};
+
+enum class ProductMenuRequest
+{
+	// Product Menu Options + SubMenu Options
+	  PRODUCT_MAIN_MENU = 0
+	// Product Menu [1-9]
+	, BACK_TO_MAIN_MENU = 1
+	, DISPLAY_PRODUCT_LIST
+	, SAVE_PRODUCTS
+	, ADD_PRODUCT // (m)
+	, DELETE_PRODUCT // (m)
+	, UPDATE_PRODUCT
+	// SubMenu (1) [10-19]
+	, SHOW_ALL_PRODUCTS = 10 
+	, FILTER_ON_PRODUCTS
+	, ORDER_BY_PRODUCTS
+	, EXIT_PRODUCT_SUBMENU_1
+	// SubMenu (2) [20-29]
+	, FILTER_ON_PRODUCTS_NAME = 20
+	, FILTER_ON_PRODUCTS_DIAMETER
+	, FILTER_ON_PRODUCTS_MANUFACTURER
+	, FILTER_ON_PRODUCTS_TYPE
+	, EXIT_PRODUCT_SUBMENU_2
+	// SubMenu (3) [30-39]
+	, FILTER_ON_PRODUCTS_TYPE_TYRE = 30
+	, FILTER_ON_PRODUCTS_TYPE_RIM
+	, EXIT_PRODUCT_SUBMENU_3
+	// SubMenu (4) [40-49]
+	, FILTER_ON_PRODUCTS_TYPE_TYRE_NAME = 40
+	, FILTER_ON_PRODUCTS_TYPE_TYRE_DIAMETER
+	, FILTER_ON_PRODUCTS_TYPE_TYRE_MANUFACTURER
+	, FILTER_ON_PRODUCTS_TYPE_TYRE_WIDTH
+	, FILTER_ON_PRODUCTS_TYPE_TYRE_HEIGHT
+	, FILTER_ON_PRODUCTS_TYPE_TYRE_SPEEDINDEX
+	, FILTER_ON_PRODUCTS_TYPE_TYRE_TYREMARKINGS
+	, EXIT_PRODUCT_SUBMENU_4
+	// SubMenu (5) [50-59]
+	, FILTER_ON_PRODUCTS_TYPE_RIM_NAME = 50
+	, FILTER_ON_PRODUCTS_TYPE_RIM_DIAMETER
+	, FILTER_ON_PRODUCTS_TYPE_RIM_MANUFACTURER
+	, FILTER_ON_PRODUCTS_TYPE_RIM_WIDTH
+	, FILTER_ON_PRODUCTS_TYPE_RIM_MATERIAL
+	, FILTER_ON_PRODUCTS_TYPE_RIM_COLOR
+	, EXIT_PRODUCT_SUBMENU_5
+	// SubMenu (6) [60-69]
+	, ORDER_BY_PRODUCTS_NAME = 60
+	, ORDER_BY_PRODUCTS_DIAMETER
+	, ORDER_BY_PRODUCTS_MANUFACTURER
+	, ORDER_BY_PRODUCTS_TYPE
+	, EXIT_PRODUCT_SUBMENU_6
+	// SubMenu (7) [70-79]
+	, ORDER_BY_PRODUCTS_TYPE_TYRE = 70
+	, ORDER_BY_PRODUCTS_TYPE_RIM
+	, EXIT_PRODUCT_SUBMENU_7
+	// SubMenu (8) [80-89]
+	, ORDER_BY_PRODUCTS_TYPE_TYRE_NAME = 80
+	, ORDER_BY_PRODUCTS_TYPE_TYRE_DIAMETER
+	, ORDER_BY_PRODUCTS_TYPE_TYRE_MANUFACTURER
+	, ORDER_BY_PRODUCTS_TYPE_TYRE_WIDTH
+	, ORDER_BY_PRODUCTS_TYPE_TYRE_HEIGHT
+	, ORDER_BY_PRODUCTS_TYPE_TYRE_SPEEDINDEX
+	, ORDER_BY_PRODUCTS_TYPE_TYRE_TYREMARKINGS
+	, EXIT_PRODUCT_SUBMENU_8
+	// SubMenu (9) [90-99]
+	, ORDER_BY_PRODUCTS_TYPE_RIM_NAME = 90
+	, ORDER_BY_PRODUCTS_TYPE_RIM_DIAMETER
+	, ORDER_BY_PRODUCTS_TYPE_RIM_MANUFACTURER
+	, ORDER_BY_PRODUCTS_TYPE_RIM_WIDTH
+	, ORDER_BY_PRODUCTS_TYPE_RIM_MATERIAL
+	, ORDER_BY_PRODUCTS_TYPE_RIM_COLOR
+	, EXIT_PRODUCT_SUBMENU_9
+};
+
+enum class InvoiceMenuRequest
+{
+	// Invoice Menu Options + SubMenu Options
+	  INVOICE_MAIN_MENU = 0 
+	// Invoice Menu [1-9]
+	, BACK_TO_MAIN_MENU = 1
+	, CREATE_CUSTOMER_INVOICE
+	, SEARCH_CUSTOMER_INVOICES
+	, ACTIVE_INVOICES
+	// SubMenu (1) [10-19]
+	, SEARCH_CUSTOMER_INVOICES_HANDLED = 10
+	, SEARCH_CUSTOMER_INVOICES_PENDING
+	, EXIT_INVOICE_SUBMENU_1
+	// SubMenu (2) [20-29]
+	, DELETE_INVOICE = 20
+	, PROCESS_INVOICE
+	, ADD_INVOICE_PRODUCT
+	, REMOVE_INVOICE_PRODUCT
+	, DISPLAY_ACTIVE_INVOICES
+	, SAVE_ACTIVE_INVOICES
+	, EXIT_INVOICE_SUBMENU_2
+};
+
+enum class DiscountMenuRequest
+{
+	// Discount Menu Options + SubMenu Options
+	  DISCOUNT_MAIN_MENU = 0
+	// Discount Menu [1-10]
+	, BACK_TO_MAIN_MENU = 1
+	, SHOW_CURRENT_DISCOUNTS
+	, SHOW_MATCHING_TABLE
+	, SAVE_DISCOUNTS
+	, CHANGE_DISCOUNT // (m)
+	, CHANGE_DISCOUNT_CONDITIONS // (m)
+};
+
+enum class AccountMenuRequest
+{
+	// Account Menu Options + SubMenu Options
+	  ACCOUNT_MAIN_MENU = 0
+	// Account Menu [1-10]
+	, BACK_TO_MAIN_MENU = 1
+	, ADD_ACCOUNT // (m)
+	, DELETE_ACCOUNT // (m)
+	, UPDATE_ACCOUNT
+};
+
+enum class MenuType {
+	  LOGIN = 0
+	, MAIN
+	, CUSTOMER
+	, PRODUCT
+	, INVOICE
+	, DISCOUNT
+	, ACCOUNT
+	, EXIT
+};
+
+struct MenuRequests {
+	LoginMenuRequest	currentLoginRequest		{ LoginMenuRequest::LOGIN_MAIN_MENU };
+	MainMenuRequest		currentMainRequest		{ MainMenuRequest::MAIN_MENU };
+	CustomerMenuRequest	currentCustomerRequest	{ CustomerMenuRequest::CUSTOMER_MAIN_MENU };
+	ProductMenuRequest	currentProductRequest	{ ProductMenuRequest::PRODUCT_MAIN_MENU };
+	InvoiceMenuRequest	currentInvoiceRequest	{ InvoiceMenuRequest::INVOICE_MAIN_MENU };
+	DiscountMenuRequest	currentDiscountRequest	{ DiscountMenuRequest::DISCOUNT_MAIN_MENU };
+	AccountMenuRequest	currentAccountRequest	{ AccountMenuRequest::ACCOUNT_MAIN_MENU };
+};
+
+struct MenuOption
+{
+	std::string optionDescription;
+	PROGRAM_PRIVILGE privilgeLevel{ PROGRAM_PRIVILGE::EMPLOYEE };
+};
+
+struct SubMenu
+{
+	std::string menuTitle;
+	std::vector<MenuOption> menuOptions;
+	int lowerBound{ 0 };
+	int upperBound{ 0 };
+};
+
+class Menu
+{
+public:
+	Menu();
+	
+	void displayMenu(User);
+	void verifyMenuInput(User,std::unordered_map<int,int>);
+	
+	int getRequest(void);
+	void setRequest(int);
+
+	void setCurrentMenuType(MenuType);
+	MenuType getCurrentMenuType(void);
+
+private:
+	MenuRequests request;
+	MenuType currentMenu{ MenuType::LOGIN };
+	SubMenu  currentSubMenu;
+	void displayLoginMenu();
+	void displayMainMenu();
+	void displayCustomerMenu();
+	void displayProductMenu();
+	void displayInvoiceMenu();
+	void displayDiscountMenu();
+	void displayAccountMenu();
+};
+
+
+
+#endif // !MENU_H
+

@@ -1,0 +1,335 @@
+
+=========================================================================================================
+Order of storage in binary files:
+=========================================================================================================
+!! order does not reflect the order of the attributes in the objects itself !!
+
+--------------------------------
+	  long int: 4  bytes
+	  char[50]: 50 bytes
+		   int: 4  bytes
+  unsigned int: 4  bytes
+	 enum type: 4  bytes
+--------------------------------
+
+ID file:
+--------
+-> customerID invoiceID productID	
+-> long int   long int  long int
+-> 4 bytes    4 bytes   4 bytes
+-> 12 bytes
+
+-> seekg(sizeof(long int) * i) == ID
+
+Employee file:
+--------------
+-> userName  password  privilge 
+-> char[50]  char[50]  int
+-> 50 bytes  4 bytes   4 bytes
+-> 58 bytes
+
+-> seekg(58 * i) == employee
+		
+Customer file:
+--------------
+-> customerID firstName lastName customerType Address
+-> customerID firstName lastName customerType country  postalcode streetname housnumber phonenumber
+-> long int   char[50]  char[50] int          char[50] char[50]   char[50]   char[50]   char[50]
+-> 4 bytes    50 bytes  50 bytes 4 bytes      50 bytes 50 bytes   50 bytes   50 bytes   50 bytes
+-> 358 bytes
+
+-> seekg(358 * i) == customer
+
+Product file:
+-------------
+-> Tyre
+-> productID productType name      manufacturer diameter quantity price   width   speedIndex height  tyreMarkings
+-> long int  int         char[50]  char[50]     int      int      int     int     int        int     char[50]  
+-> 4 bytes   4 bytes     50 bytes  50 bytes     4 bytes  4 bytes  4 bytes 4 bytes 4 bytes    4 bytes 50 bytes
+-> 182 bytes
+
+-> Rim
+-> productID productType name      manufacturer diameter quantity price   width   material color
+-> long int  int         char[50]  char[50]     int      int      int     int     int      char[50]
+-> 4 bytes   4 bytes     50 bytes  50 bytes     4 bytes  4 bytes  4 bytes 4 bytes 4 bytes  50 bytes
+-> 178 bytes
+
+-> seekg(0 + 4) == Type
+-> seekg(Type == Rim ? 178 - 4 : 182 - 4) == Rim/Tyre
+
+Invoice file:
+-------------
+!! because invoices can be dynamic of size we store them by prepending the size of the invoice !!
+!! sizeof() !! is calculated at compile time NOT runtime which means the size of the invoice has to be calculted at run time
+
+-> invoice : pending
+-> sizeof(invoice) invoiceID customerID x*(productID + type + quantity) 
+-> size_t          long int  long int   x*(long int + int + int)
+-> 8 bytes         4 bytes   4 bytes    x*( 4 bytes + 4 bytes + 4 bytes)
+		
+-> sizeof(invoice) ==  18 + (x * 12)
+-> x ==  (sizeof(invoice) - 18) / 12
+-> x == number of products
+
+-> invoice : handled
+-> sizeof(invoice) invoiceID discount price   Customer     (x*Tyre + y*Rim + (x + y) * quantity)                
+-> size_t          long int  int      int     /            /                                                    
+-> 8 bytes         4 bytes   4 bytes  4 bytes 358 bytes    (x *  182 bytes + y * 178 bytes + (x + y) * 4 bytes) 
+		
+-> sizeof(invoice) == 378 + (x *  182 + y * 178 + (x + y) * 4)
+-> sizeof(invoice) == 378 + (x *  186 + y * 182)
+-> 
+
+-> seekg(sizeof(int)) == sizeInvoice
+-> seekg(sizeInvoice) = Invoice
+
+Discount file:
+-------------
+-> VAT     discountCorpCust discountPrivCust discountExPrivCust
+-> int     int              int              int
+-> 4 bytes 4 bytes          4 bytes          4 bytes
+-> 16 bytes
+
+=========================================================================================================
+Customers Update Menu
+=========================================================================================================
+
+Fields and Validation Rules
+---------------------------
+
+FirstName
+---------
+Allowed:
+  - MIN    : 2 characters
+  - MAX    : STR_LENGTH
+  - FLAGS  : NO NUMERIC CHARACTERS
+ 
+LastName
+--------
+Allowed:
+  - MIN    : 2 characters
+  - MAX    : STR_LENGTH
+  - FLAGS  : NO NUMERIC CHARACTERS
+
+Type
+----
+Allowed:
+  - Private Customer :   Enter "p"
+  - Corporate Customer : Enter "c"
+
+Country
+-------
+Allowed:
+  - MIN    : 3 characters
+  - MAX    : STR_LENGTH
+  - FLAGS  : NO NUMERIC CHARACTERS
+
+PostalCode
+----------
+Allowed:
+  - MIN    : 4 characters
+  - MAX    : STR_LENGTH
+  - FLAGS  : NUMERIC CHARACTERS ALLOWED
+
+StreetName
+----------
+Allowed:
+  - MIN    : 4 characters
+  - MAX    : STR_LENGTH
+  - FLAGS  : NO NUMERIC CHARACTERS
+
+HouseNumber
+-----------
+Allowed:
+  - MIN    : 1 character
+  - MAX    : STR_LENGTH
+  - FLAGS  : ONLY NUMERIC CHARACTERS
+
+PhoneNumber
+-----------
+Allowed:
+  - MIN    : 9 characters
+  - MAX    : STR_LENGTH
+  - FLAGS  : ONLY NUMERIC CHARACTERS
+
+Navigation
+----------
+  - Save Changes         : Select 1
+  - Return to Main Menu  : Select 10
+
+Validation Rules:
+-----------------
+  - **Alpha Validation**:	Fields such as FirstName, LastName, Country, and StreetName 
+							must not contain numeric characters.
+
+  - **Numeric Validation**: Fields such as HouseNumber and PhoneNumber must contain 
+                            only numeric characters.
+
+  - **Input Length**:		Each field must meet the minimum length requirement.
+  
+  - **Data Truncation**:	Input exceeding STR_LENGTH is truncated to STR_LENGTH - 1.
+
+
+=========================================================================================================
+Products Update Menu
+=========================================================================================================
+
+Fields and Validation Rules
+---------------------------
+
+Product Name
+------------
+Allowed:
+  - MIN    : 4 characters
+  - FLAGS  : ALPHANUMERIC CHARACTERS ALLOWED
+
+Product Manufacturer
+---------------------
+Allowed:
+  - MIN    : 4 characters
+  - FLAGS  : ALPHANUMERIC CHARACTERS ALLOWED
+
+Quantity
+--------
+Allowed:
+  - FLAGS  : NUMERIC INPUT ONLY
+  - OPTIONS:
+    - Subtract Quantity: Enter "s"
+    - Add Quantity: Enter "a"
+
+Diameter
+--------
+Allowed:
+  - FLAGS  : NUMERIC INPUT ONLY
+
+Price
+-----
+Allowed:
+  - FLAGS  : NUMERIC INPUT ONLY
+
+Width
+-----
+Allowed:
+  - FLAGS  : NUMERIC INPUT ONLY
+
+Additional Fields by Product Type
+----------------------------------
+
+Tyre-Specific Fields:
+----------------------
+1. Height:
+   - Allowed:
+     - FLAGS  : NUMERIC INPUT ONLY
+
+2. Tyre Markings:
+   - Allowed:
+     - MIN    : 4 characters
+     - FLAGS  : ALPHANUMERIC CHARACTERS ALLOWED
+
+3. Speed Index:
+   - Allowed:
+     - FLAGS  : NUMERIC INPUT ONLY
+     - RANGE  : 1 to 30
+
+Rim-Specific Fields:
+---------------------
+1. Color:
+   - Allowed:
+     - FLAGS  : ALPHABETIC INPUT ONLY
+
+2. Material:
+   - Allowed:
+     - FLAGS  : NUMERIC INPUT ONLY
+     - OPTIONS:
+       - 1: STEEL
+       - 2: ALUMINIUM
+
+Validation Rules
+----------------
+  - **Alpha Validation**:       Fields such as Product Name, Manufacturer, and Color 
+                                must contain only alphabetic characters.
+  
+  - **Numeric Validation**:     Fields such as Quantity, Diameter, Price, Width, and 
+                                Speed Index must contain only numeric characters.
+  
+  - **Input Length**:           Fields such as Product Name and Manufacturer must meet 
+                                the minimum length requirement.
+  
+  - **Data Type Validation**:   For fields with specific formats (e.g., numeric 
+                                or alphabetic input), validation ensures proper input.
+
+
+=========================================================================================================
+Menu Class
+=========================================================================================================
+ __       __                               
+/  \     /  |                              
+$$  \   /$$ |  ______   _______   __    __ 
+$$$  \ /$$$ | /      \ /       \ /  |  /  |
+$$$$  /$$$$ |/$$$$$$  |$$$$$$$  |$$ |  $$ |
+$$ $$ $$/$$ |$$    $$ |$$ |  $$ |$$ |  $$ |
+$$ |$$$/ $$ |$$$$$$$$/ $$ |  $$ |$$ \__$$ |
+$$ | $/  $$ |$$       |$$ |  $$ |$$    $$/ 
+$$/      $$/  $$$$$$$/ $$/   $$/  $$$$$$/  
+                                           
+                                           
+                                           
+  ______   __                              
+ /      \ /  |                             
+/$$$$$$  |$$ |  ______    _______  _______ 
+$$ |  $$/ $$ | /      \  /       |/       |
+$$ |      $$ | $$$$$$  |/$$$$$$$//$$$$$$$/ 
+$$ |   __ $$ | /    $$ |$$      \$$      \ 
+$$ \__/  |$$ |/$$$$$$$ | $$$$$$  |$$$$$$  |
+$$    $$/ $$ |$$    $$ |/     $$//     $$/ 
+ $$$$$$/  $$/  $$$$$$$/ $$$$$$$/ $$$$$$$/  
+=========================================================================================================
+Menu Class
+=========================================================================================================
+
+Example 1:
+---------
+	original menu:
+	-------------
+	1
+	2
+	3 <-- user privilge to low to see this option
+	4
+	5
+
+	user	program
+	|->1    |->1
+	|->2    |->2
+	|->3    |->4 <-- when user enters 3 we should go to 4
+	|->4    |->5
+
+Example 2:
+---------
+	original menu:
+	-------------
+	 1
+	 2
+	 3 <-- user privilge to low to see this option
+	 4 <-- same
+	 5
+
+	 1  1
+	 2  2
+	 3  5 <-- when user enters 3 we should go to 5
+	    
+
+Example 3:
+---------
+	original menu:
+	-------------
+	 1
+	 2
+	 3 <-- user privilge to low to see this option
+	 4 
+	 5 <-- same
+
+	 1  1
+	 2  2
+	 3  4 <-- when user enters 3 we should go to 4
+	    
+
