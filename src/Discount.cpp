@@ -1,4 +1,4 @@
-#include "Discount.h"
+#include "../headers/Discount.h"
 
 Discount::Discount()
 {

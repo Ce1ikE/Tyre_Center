@@ -1,6 +1,6 @@
-#include "Invoice.h"
-#include "TyreCenterHeader.h"
-#include "Controller.h"
+#include "../headers/Invoice.h"
+#include "../headers/TyreCenterHeader.h"
+#include "../headers/Controller.h"
 
 Invoice::Invoice()
 {

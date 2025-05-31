@@ -1,4 +1,4 @@
-#include "Rim.h"
+#include "../headers/Rim.h"
 
 Rim::Rim()
 {

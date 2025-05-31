@@ -1,4 +1,4 @@
-#include "Tyre.h"
+#include "../headers/Tyre.h"
 
 Tyre::Tyre(ProductType newProductType, std::string newManufacturer,std::string newProductName, int newDiameter, int newQuantity, int newPrice,SpeedIndex newSpeedIndex,std::string newTyreMarkings,int newHeight,int newWidth)
 	:Product::Product(newProductType, newManufacturer,newProductName,newDiameter,newQuantity,newPrice)
